@@ -1,0 +1,59 @@
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // Update gallery grid descriptions with plain link
+        const gridCaptions = document.querySelectorAll(".elementor-gallery-item__description");
+        gridCaptions.forEach((caption) => {
+            if (caption.innerHTML.includes("[link=")) {
+                const match = caption.innerHTML.match(/\[link=(.*?)\]/);
+                if (match) {
+                    const url = match[1];
+                    const linkHTML = `<a href="${url}" target="_blank" class="gallery-link">Visit site</a>`;
+                    caption.innerHTML = caption.innerHTML.replace(match[0], linkHTML);
+                }
+            }
+        });
+
+        // Update lightbox description with button-style link
+        const galleryItems = document.querySelectorAll(".e-gallery-item");
+        galleryItems.forEach((item) => {
+            item.addEventListener("click", () => {
+                const interval = setInterval(() => {
+                    const caption = document.querySelector(".elementor-slideshow__description");
+                    if (caption && caption.innerHTML.includes("[link=")) {
+                        const match = caption.innerHTML.match(/\[link=(.*?)\]/);
+                        if (match) {
+                            const url = match[1];
+                            const linkHTML = `<a href="${url}" target="_blank" class="lightbox-btn">Visit site</a>`;
+                            caption.innerHTML = caption.innerHTML.replace(match[0], linkHTML);
+                        }
+                        clearInterval(interval);
+                    }
+                }, 100);
+            });
+        });
+    });
+</script>
+
+<style>
+    .gallery-link {
+        color: #21759b;
+        text-decoration: underline;
+        font-weight: 500;
+        font-size: 0.9em;
+    }
+
+    .swiper .lightbox-btn {
+        display: inline-block;
+        margin-top: 8px;
+        padding: 6px 12px;
+        background-color: #21759b;
+        color: white !important;
+        text-decoration: none;
+        border-radius: 4px;
+        font-size: 0.9em;
+        text-decoration: none;
+    }
+    .lightbox-btn:hover {
+        background-color: #1e5f80;
+    }
+</style>
