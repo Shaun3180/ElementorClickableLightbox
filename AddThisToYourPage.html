@@ -1,37 +1,56 @@
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        // Update gallery grid descriptions with plain link
-        const gridCaptions = document.querySelectorAll(".elementor-gallery-item__description");
-        gridCaptions.forEach((caption) => {
-            if (caption.innerHTML.includes("[link=")) {
-                const match = caption.innerHTML.match(/\[link=(.*?)\]/);
-                if (match) {
-                    const url = match[1];
-                    const linkHTML = `<a href="${url}" target="_blank" class="gallery-link">Visit site</a>`;
-                    caption.innerHTML = caption.innerHTML.replace(match[0], linkHTML);
-                }
+document.addEventListener("DOMContentLoaded", function () {
+    // 1. Update gallery grid descriptions with plain link
+    const gridCaptions = document.querySelectorAll(".elementor-gallery-item__description");
+    gridCaptions.forEach((caption) => {
+        if (caption.innerHTML.includes("[link=")) {
+            const match = caption.innerHTML.match(/\[link=(.*?)\]/);
+            if (match) {
+                const url = match[1];
+                const linkHTML = `<a href="${url}" target="_blank" class="gallery-link">Visit site</a>`;
+                caption.innerHTML = caption.innerHTML.replace(match[0], linkHTML);
             }
-        });
+        }
+    });
 
-        // Update lightbox description with button-style link
-        const galleryItems = document.querySelectorAll(".e-gallery-item");
-        galleryItems.forEach((item) => {
-            item.addEventListener("click", () => {
-                const interval = setInterval(() => {
-                    const caption = document.querySelector(".elementor-slideshow__description");
-                    if (caption && caption.innerHTML.includes("[link=")) {
-                        const match = caption.innerHTML.match(/\[link=(.*?)\]/);
-                        if (match) {
-                            const url = match[1];
-                            const linkHTML = `<a href="${url}" target="_blank" class="lightbox-btn">Visit site</a>`;
-                            caption.innerHTML = caption.innerHTML.replace(match[0], linkHTML);
-                        }
-                        clearInterval(interval);
-                    }
-                }, 100);
-            });
+    // 2. Function to update lightbox caption with styled button
+    function updateLightboxCaption() {
+        const caption = document.querySelector(".elementor-slideshow__description");
+        if (caption && caption.innerHTML.includes("[link=")) {
+            const match = caption.innerHTML.match(/\[link=(.*?)\]/);
+            if (match) {
+                const url = match[1];
+                const linkHTML = `<a href="${url}" target="_blank" class="lightbox-btn">Visit site</a>`;
+                caption.innerHTML = caption.innerHTML.replace(match[0], linkHTML);
+            }
+        }
+    }
+
+    // 3. Hook into initial image click (opens lightbox)
+    const galleryItems = document.querySelectorAll(".e-gallery-item");
+    galleryItems.forEach((item) => {
+        item.addEventListener("click", () => {
+            const interval = setInterval(() => {
+                const caption = document.querySelector(".elementor-slideshow__description");
+                if (caption) {
+                    updateLightboxCaption();
+                    clearInterval(interval);
+
+                    // 4. Set up MutationObserver to catch changes as user navigates
+                    const observer = new MutationObserver(() => {
+                        updateLightboxCaption();
+                    });
+
+                    observer.observe(caption, {
+                        childList: true,
+                        subtree: true,
+                        characterData: true,
+                    });
+                }
+            }, 100);
         });
     });
+});
 </script>
 
 <style>
